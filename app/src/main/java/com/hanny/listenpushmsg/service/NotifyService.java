@@ -16,6 +16,8 @@ import java.util.Map;
 @SuppressLint("OverrideAbstract")
 public class NotifyService extends NotificationListenerService {
 
+    public static String SEND_MSG_BROADCAST = "notify_msg";
+
     @Override
     public void onNotificationPosted(StatusBarNotification sbn) {
         super.onNotificationPosted(sbn);
@@ -44,7 +46,10 @@ public class NotifyService extends NotificationListenerService {
         if (content == null || content.length() == 1) {
             return;
         }
-        Log.e("msg", content);
+        Intent intent = new Intent();
+        intent.putExtra("msg", content);
+        intent.setAction(SEND_MSG_BROADCAST);
+        sendBroadcast(intent);
     }
 
     private Map<String, Object> getNotiInfo(Notification notification) {

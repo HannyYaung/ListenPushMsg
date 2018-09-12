@@ -1,19 +1,24 @@
 package com.hanny.listenpushmsg;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.TextView;
 
 import com.hanny.listenpushmsg.service.NotifyService;
 
 public class MainActivity extends AppCompatActivity {
+
+    private TextView tvMsg;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,7 +35,11 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+        tvMsg = findViewById(R.id.tvMsg);
+
+        registBroadCast();
     }
+
 
     private void openSetting(Context context) {
         Intent intent = new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
@@ -71,4 +80,17 @@ public class MainActivity extends AppCompatActivity {
                 new ComponentName(context, NotifyService.class),
                 PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
     }
+
+    private void registBroadCast() {
+        IntentFilter filter = new IntentFilter(NotifyService.SEND_MSG_BROADCAST);
+        registerReceiver(receiver, filter);
+    }
+
+    private BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String msg = intent.getStringExtra("msg");
+            tvMsg.setText(msg);
+        }
+    };
 }
